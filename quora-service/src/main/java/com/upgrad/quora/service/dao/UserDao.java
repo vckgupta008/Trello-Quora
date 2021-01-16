@@ -67,4 +67,27 @@ public class UserDao {
         entityManager.persist(userAuth);
         return userAuth;
     }
+
+    /**
+     * Method to retrieve UserAuthEntity for the given access token
+     * @param accessToken   - String represents the access token
+     * @return              - UserAuthEntity object if present in the database, else return null
+     */
+    public UserAuthEntity getUserAuth(final String accessToken) {
+        try {
+            return entityManager.createNamedQuery("userAuthByAccessToken", UserAuthEntity.class)
+                    .setParameter("accessToken", accessToken)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    /**
+     * Method to update UserAuthEntity object in the database
+     * @param userAuthEntity    - UserAuthEntity object containing updated values
+     */
+    public void updateUserAuth(UserAuthEntity userAuthEntity) {
+        entityManager.merge(userAuthEntity);
+    }
 }

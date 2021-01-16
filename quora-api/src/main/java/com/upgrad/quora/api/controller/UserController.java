@@ -1,13 +1,14 @@
 package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.SigninResponse;
+import com.upgrad.quora.api.model.SignoutResponse;
 import com.upgrad.quora.api.model.SignupUserRequest;
 import com.upgrad.quora.api.model.SignupUserResponse;
-import com.upgrad.quora.service.business.AuthenticationService;
 import com.upgrad.quora.service.business.UserBusinessService;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
+import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -28,9 +29,6 @@ public class UserController {
 
     @Autowired
     UserBusinessService userBusinessService;
-
-    @Autowired
-    AuthenticationService authenticationService;
 
     /**
      * RestController method called when the request pattern is of type '/user/signup'
@@ -89,7 +87,7 @@ public class UserController {
         String decodedText = new String(decode);
         String[] decodedArray = decodedText.split(":");
 
-        UserAuthEntity userAuth = authenticationService.authenticate(decodedArray[0], decodedArray[1]);
+        UserAuthEntity userAuth = userBusinessService.authenticate(decodedArray[0], decodedArray[1]);
         UserEntity user = userAuth.getUser();
 
         SigninResponse signinResponse = new SigninResponse().id(user.getUuid())
@@ -98,6 +96,28 @@ public class UserController {
         headers.add("access-token", userAuth.getAccessToken());
 
         return new ResponseEntity<SigninResponse>(signinResponse, headers, HttpStatus.OK);
+    }
+
+    /**
+     * RestController method called when the request pattern is of type '/user/signin'
+     * and the incoming request is of 'POST' type
+     * Sign out user if valid authorization token is provided
+     *
+     * @param authorization                 - String represents authorization token
+     * @return                              - ResponseEntity (SignoutResponse along with HTTP status code)
+     * @throws SignOutRestrictedException   - if valid authorization token is not provided
+     */
+    @RequestMapping(method = RequestMethod.POST, path = "/user/signout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<SignoutResponse> signout(@RequestHeader("authorization") final String authorization)
+            throws SignOutRestrictedException {
+
+        UserAuthEntity userAuth = userBusinessService.updateUserAuth(authorization);
+        UserEntity user = userAuth.getUser();
+
+        SignoutResponse signoutResponse = new SignoutResponse().id(user.getUuid())
+                .message("SIGNED OUT SUCCESSFULLY");
+
+        return new ResponseEntity<SignoutResponse>(signoutResponse, HttpStatus.OK);
     }
 
 }
