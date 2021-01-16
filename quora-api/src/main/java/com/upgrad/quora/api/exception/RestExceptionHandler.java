@@ -2,6 +2,7 @@ package com.upgrad.quora.api.exception;
 
 import com.upgrad.quora.api.model.ErrorResponse;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
+import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.springframework.http.HttpStatus;
@@ -53,6 +54,20 @@ public class RestExceptionHandler {
             SignOutRestrictedException excp, WebRequest request) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
                 .message(excp.getErrorMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * Method to handle AuthorizationFailedException if incorrect authorization token is provided during user sign out
+     *
+     * @param excp      - AuthorizationFailedException
+     * @param request   - WebRequest
+     * @return          - ResponseEntity (ErrorResponse along with Http status code
+     */
+    @ExceptionHandler(AuthorizationFailedException.class)
+    public ResponseEntity<ErrorResponse> authorizationFailedException(
+            AuthorizationFailedException excp, WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+                .message(excp.getErrorMessage()), HttpStatus.FORBIDDEN);
     }
 
 }
