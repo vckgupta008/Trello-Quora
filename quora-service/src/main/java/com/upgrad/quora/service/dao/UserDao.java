@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.dao;
 
+import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import org.springframework.stereotype.Repository;
 
@@ -19,7 +20,7 @@ public class UserDao {
      * @param username  - String that represents username
      * @return          - UserEntity object if user exists, else return null
      */
-    public UserEntity getUserByUsername(String username) {
+    public UserEntity getUserByUsername(final String username) {
         try {
             return entityManager.createNamedQuery("userByUsername", UserEntity.class)
                     .setParameter("username", username)
@@ -35,7 +36,7 @@ public class UserDao {
      * @param email     - String that represents email id
      * @return          - UserEntity object if user exists, else return null
      */
-    public UserEntity getUserByEmail(String email) {
+    public UserEntity getUserByEmail(final String email) {
         try {
             return entityManager.createNamedQuery("userByEmail", UserEntity.class)
                     .setParameter("email", email)
@@ -51,9 +52,19 @@ public class UserDao {
      * @param userEntity    - UserEntity object to be persisted in the database
      * @return              - UserEntity object
      */
-    public UserEntity createUser(UserEntity userEntity) {
+    public UserEntity createUser(final UserEntity userEntity) {
         entityManager.persist(userEntity);
         return userEntity;
     }
 
+    /**
+     * Method to persist user auth details in the database
+     *
+     * @param userAuth  - UserAuthEntity object to be persisted in the database
+     * @return          - UserAuthEntity object
+     */
+    public UserAuthEntity createUserAuth(final UserAuthEntity userAuth) {
+        entityManager.persist(userAuth);
+        return userAuth;
+    }
 }

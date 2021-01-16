@@ -21,30 +21,30 @@ public class UserBusinessService {
      * Method to check if the user already exists in the database with given username
      *
      * @param username                      - String that represents username to be verified in the database
-     * @return                              - false if the user does not exists
+     * @return                              - UserEntity object if the user does not exists
      * @throws SignUpRestrictedException    - if the user details with given username already exists in the database
      */
-    public boolean usernameExists(String username) throws SignUpRestrictedException {
+    public UserEntity usernameExists(final String username) throws SignUpRestrictedException {
         UserEntity userEntity = userDao.getUserByUsername(username);
         if (userEntity != null) {
             throw new SignUpRestrictedException("SGR-001", "Try any other Username, this Username has already been taken");
         }
-        return false;
+        return userEntity;
     }
 
     /**
      * Method to check if the user already exists in the database with given email id
      *
      * @param email                         - String that represents email id to be verified in the database
-     * @return                              - false if the user does not exists
+     * @return                              - UserEntity object if the user does not exists
      * @throws SignUpRestrictedException    - if the user details with given email id already exists in the database
      */
-    public boolean userExists(String email) throws SignUpRestrictedException {
+    public UserEntity userExists(final String email) throws SignUpRestrictedException {
         UserEntity userEntity = userDao.getUserByEmail(email);
         if (userEntity != null) {
             throw new SignUpRestrictedException("SGR-002", "This user has already been registered, try with any other emailId");
         }
-        return false;
+        return userEntity;
     }
 
     /**
@@ -54,7 +54,7 @@ public class UserBusinessService {
      * @return              - UserEntity object
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public UserEntity signup(UserEntity userEntity) {
+    public UserEntity signup(final UserEntity userEntity) {
         String[] encryptedText = cryptographyProvider.encrypt(userEntity.getPassword());
         userEntity.setSalt(encryptedText[0]);
         userEntity.setPassword(encryptedText[1]);

@@ -19,13 +19,12 @@ import java.time.ZonedDateTime;
  */
 
 @Entity
-@Table(name = "user_auth_tokens")
-public class UserAuthTokenEntity implements Serializable {
+@Table(name = "user_auth")
+public class UserAuthEntity implements Serializable {
 
     @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_auth_id_gen")
-    @SequenceGenerator(name = "users_auth_id_gen", sequenceName = "user_auth_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "UUID")
