@@ -18,7 +18,12 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "question")
-public class QuestionEntity {
+@NamedQueries(
+        {
+            @NamedQuery(name = "getAllQuestions", query = "select q from QuestionEntity q")
+        }
+)
+public class QuestionEntity  {
 
     @Id
     @Column(name = "ID")

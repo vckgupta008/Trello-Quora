@@ -6,6 +6,9 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import java.util.List;
+
+
 @Repository
 public class QuestionDao {
 
@@ -20,5 +23,16 @@ public class QuestionDao {
     public QuestionEntity createQuestion(final QuestionEntity questionEntity) {
         entityManager.persist(questionEntity);
         return questionEntity;
+    }
+
+    /**
+     * Retrieves all the questions present in the Database question table and returns as a list
+     *
+     * @return The list of questions present in the question table
+     */
+    public List<QuestionEntity> getAllQuestions() {
+        final List<QuestionEntity> allQuestions = entityManager
+                .createNamedQuery("getAllQuestions", QuestionEntity.class).getResultList();
+        return allQuestions;
     }
 }
