@@ -28,7 +28,7 @@ import java.util.UUID;
 public class UserController {
 
     @Autowired
-    UserBusinessService userBusinessService;
+    private UserBusinessService userBusinessService;
 
     /**
      * RestController method called when the request pattern is of type '/user/signup'
@@ -58,12 +58,8 @@ public class UserController {
         userEntity.setRole("nonadmin");
         userEntity.setContactNumber(signupUserRequest.getContactNumber());
 
-        // Create user only if the UserEntity does not exist with the same username
-        userBusinessService.usernameExists(userEntity.getUserName());
-        // Create user only if the user detail is not registered with email id
-        userBusinessService.userExists(userEntity.getEmail());
-
         final UserEntity createdUserEntity = userBusinessService.signup(userEntity);
+
         SignupUserResponse userResponse = new SignupUserResponse().id(createdUserEntity.getUuid())
                 .status("USER SUCCESSFULLY REGISTERED");
 
@@ -87,7 +83,7 @@ public class UserController {
         String decodedText = new String(decode);
         String[] decodedArray = decodedText.split(":");
 
-        UserAuthEntity userAuth = userBusinessService.authenticate(decodedArray[0], decodedArray[1]);
+        UserAuthEntity userAuth = userBusinessService.signInUser(decodedArray[0], decodedArray[1]);
         UserEntity user = userAuth.getUser();
 
         SigninResponse signinResponse = new SigninResponse().id(user.getUuid())
@@ -111,7 +107,7 @@ public class UserController {
     public ResponseEntity<SignoutResponse> signout(@RequestHeader("authorization") final String authorization)
             throws SignOutRestrictedException {
 
-        UserAuthEntity userAuth = userBusinessService.updateUserAuth(authorization);
+        UserAuthEntity userAuth = userBusinessService.signOutUser(authorization);
         UserEntity user = userAuth.getUser();
 
         SignoutResponse signoutResponse = new SignoutResponse().id(user.getUuid())
