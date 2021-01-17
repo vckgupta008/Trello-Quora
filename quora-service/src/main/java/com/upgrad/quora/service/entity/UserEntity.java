@@ -4,7 +4,6 @@ import org.apache.commons.lang3.builder.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -17,7 +16,8 @@ import java.io.Serializable;
 @NamedQueries(
         {
                 @NamedQuery(name = "userByUsername", query = "select u from UserEntity u where u.userName = :username"),
-                @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email")
+                @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email"),
+                @NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid =:uuid")
         }
 )
 public class UserEntity implements Serializable{
@@ -29,59 +29,47 @@ public class UserEntity implements Serializable{
 
     @Column(name = "UUID")
     @NotNull
-    @Size(max = 200)
     private String uuid;
 
     @Column(name = "FIRSTNAME")
     @NotNull
-    @Size(max = 30)
     private String firstName;
 
     @Column(name = "LASTNAME")
     @NotNull
-    @Size(max = 30)
     private String lastName;
 
     @Column(name = "USERNAME")
     @NotNull
-    @Size(max = 30)
     private String userName;
 
     @Column(name = "EMAIL")
     @NotNull
-    @Size(max = 50)
     private String email;
 
     @Column(name = "PASSWORD")
     @NotNull
-    @Size(max = 255)
     @ToStringExclude
     private String password;
 
     @Column(name = "SALT")
     @NotNull
-    @Size(max = 200)
     @ToStringExclude
     private String salt;
 
     @Column(name="COUNTRY")
-    @Size(max = 30)
     private String country;
 
     @Column(name="ABOUTME")
-    @Size(max = 50)
     private String aboutMe;
 
     @Column(name="DOB")
-    @Size(max = 30)
     private String dob;
 
     @Column(name="ROLE")
-    @Size(max = 30)
     private String role;
 
     @Column(name = "CONTACTNUMBER")
-    @Size(max = 30)
     private String contactNumber;
 
     public Integer getId() {

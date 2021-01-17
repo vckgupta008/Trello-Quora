@@ -12,7 +12,7 @@ import javax.persistence.PersistenceContext;
 public class UserDao {
 
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
     /**
      * Method to get user details for the given username from the database
@@ -89,5 +89,30 @@ public class UserDao {
      */
     public void updateUserAuth(UserAuthEntity userAuthEntity) {
         entityManager.merge(userAuthEntity);
+    }
+
+    /**
+     * Method to get user details for the given user uuid from the database
+     *
+     * @param uuid      - String that represents user uuid
+     * @return          - UserEntity object if user exists, else return null
+     */
+    public UserEntity getUserByUuid(final String uuid) {
+        try {
+            return entityManager.createNamedQuery("userByUuid", UserEntity.class)
+                    .setParameter("uuid", uuid)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    /**
+     * Method to delete user profile from database
+     *
+     * @param user  - UserEntity object to be deleted
+     */
+    public void deleteUser(UserEntity user) {
+        entityManager.remove(user);
     }
 }

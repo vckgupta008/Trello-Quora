@@ -9,7 +9,6 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
@@ -33,7 +32,6 @@ public class UserAuthEntity implements Serializable {
 
     @Column(name = "UUID")
     @NotNull
-    @Size(max = 200)
     private String uuid;
 
     @ManyToOne
@@ -44,7 +42,6 @@ public class UserAuthEntity implements Serializable {
 
     @Column(name = "ACCESS_TOKEN")
     @NotNull
-    @Size(max = 500)
     private String accessToken;
 
     @Column(name = "EXPIRES_AT")
