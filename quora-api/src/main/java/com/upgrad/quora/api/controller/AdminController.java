@@ -26,7 +26,7 @@ public class AdminController {
      * @param authorization                 - String represents authorization token
      * @return                              - ResponseEntity (UserDeleteResponse along with HTTP status code)
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization code is sent, or if the user is not 'admin'
-     * @throws UserNotFoundException        - if user does not exist in the database
+     * @throws UserNotFoundException        - if user to be deleted does not exist in the database
      */
     @RequestMapping(method = RequestMethod.DELETE, path = "/admin/user/{userId}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
