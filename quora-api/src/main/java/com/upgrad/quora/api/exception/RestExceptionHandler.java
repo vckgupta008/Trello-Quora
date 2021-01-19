@@ -81,4 +81,18 @@ public class RestExceptionHandler {
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Method to handle InvalidQuestionException if user does not exist in the database
+     *
+     * @param excp      - InvalidQuestionException
+     * @param request   - WebRequest
+     * @return          - ResponseEntity (ErrorResponse along with Http status code
+     */
+    @ExceptionHandler(InvalidQuestionException.class)
+    public ResponseEntity<ErrorResponse> invalidQuestionException(
+            InvalidQuestionException excp, WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+                .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
+    }
+
 }
