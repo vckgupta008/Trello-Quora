@@ -12,19 +12,19 @@ import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 
 /**
- * The QuestionEntity class is mapped to table 'question' in database
+ * The AnswerEntity class is mapped to table 'answer' in database
  * All the columns are mapped to its respective attributes of the class
  */
 
 @Entity
-@Table(name = "question")
+@Table(name = "answer")
 @NamedQueries(
         {
-                @NamedQuery(name = "getAllQuestions", query = "select q from QuestionEntity q"),
-                @NamedQuery(name = "getQuestionByUuid", query = "select q from QuestionEntity q where q.uuid = :uuid")
+
+                @NamedQuery(name = "getAnswerByUuid", query = "select a from AnswerEntity a where a.uuid = :uuid")
         }
 )
-public class QuestionEntity {
+public class AnswerEntity {
 
     @Id
     @Column(name = "ID")
@@ -35,9 +35,9 @@ public class QuestionEntity {
     @NotNull
     private String uuid;
 
-    @Column(name = "CONTENT")
+    @Column(name = "ANS")
     @NotNull
-    private String content;
+    private String ans;
 
     @Column(name = "DATE")
     @NotNull
@@ -48,6 +48,12 @@ public class QuestionEntity {
     @NotNull
     @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity user;
+
+    @ManyToOne
+    @JoinColumn(name = "QUESTION_ID")
+    @NotNull
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private QuestionEntity question;
 
     public Integer getId() {
         return id;
@@ -65,12 +71,12 @@ public class QuestionEntity {
         this.uuid = uuid;
     }
 
-    public String getContent() {
-        return content;
+    public String getAns() {
+        return ans;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setAns(String ans) {
+        this.ans = ans;
     }
 
     public ZonedDateTime getDate() {
@@ -89,6 +95,14 @@ public class QuestionEntity {
         this.user = user;
     }
 
+    public QuestionEntity getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(QuestionEntity question) {
+        this.question = question;
+    }
+
     @Override
     public boolean equals(Object obj) {
         return new EqualsBuilder().append(this, obj).isEquals();
@@ -103,4 +117,5 @@ public class QuestionEntity {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
+
 }
