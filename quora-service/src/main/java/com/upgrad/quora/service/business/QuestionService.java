@@ -81,7 +81,7 @@ public class QuestionService {
      * @return - QuestionEntity object
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization Token is sent,
      *                                      or the user has already signed out, or The user is not the owner of the question
-     * @throws InvalidQuestionException     - if the question uuid does not exist in the database
+     * @throws InvalidQuestionException     - if the question
      */
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -112,4 +112,42 @@ public class QuestionService {
         return questionDao.editQuestionContent(currentQuestionEntity);
     }
 
+    /**
+     * @param questUuid - String represents question uuid
+     * @param token     - String Represents token of user for valid authentication
+     * @return - QuestionEntity
+     * @throws AuthorizationFailedException - if incorrect/ invalid authorization Token is sent,
+     *                                      or the user has already signed out, or The user is not the owner of the question or
+     * @throws InvalidQuestionException     - if the question id does not exist in the database
+     */
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public QuestionEntity deleteQuestion(final String questUuid, final String token)
+            throws AuthorizationFailedException, InvalidQuestionException {
+
+        UserAuthEntity userAuthEntity = userDao.getUserAuth(token);
+        if (userAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+
+        if (userAuthEntity.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to delete the question");
+        }
+
+        QuestionEntity questionEntity = questionDao.getQuestionByUuid(questUuid);
+
+        if (questionEntity == null) {
+            throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
+        }
+
+        if (!questionEntity.getUser().getUuid().equals(userAuthEntity.getUser().getUuid()) && !userAuthEntity.getUser().getRole().equals("admin")) {
+            throw new AuthorizationFailedException("ATHR-003", "Only the question owner or admin can delete the question");
+        }
+
+        return questionDao.deleteQuestion(questionEntity);
+
+    }
+
+
 }
+

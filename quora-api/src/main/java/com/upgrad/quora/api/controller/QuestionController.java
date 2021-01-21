@@ -1,10 +1,12 @@
 package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.*;
+import com.upgrad.quora.api.model.QuestionDeleteResponse;
 import com.upgrad.quora.service.business.QuestionService;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
+import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,9 +30,11 @@ public class QuestionController {
      * and the incoming request is of 'POST' type
      * Persist QuestionRequest in the database
      *
-     * @param questionRequest - QuestionRequest object to be persisted in the databse
-     * @param authorization   - String represents authorization token
+     * @param questionRequest - QuestionRequest object to be persisted in the database
      * @return - ResponseEntity (QuestionResponse along with HTTP status code)
+     * @throws AuthorizationFailedException - if incorrect/ invalid authorization Token is sent,
+     *                                      or the user has already signed out@param authorization
+     *                                      - String represents authorization token
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization code is sent
      */
     @RequestMapping(method = RequestMethod.POST, path = "/question/create",
@@ -61,11 +65,14 @@ public class QuestionController {
      *
      * @param authorization -String represents authorization token
      * @return -ResponseEntity (QuestionDetailsResponse along with HTTP status code)
-     * @throws AuthorizationFailedException -if incorrect/ invalid authorization code is sent
+     * @throws AuthorizationFailedException - if incorrect/ invalid authorization Token is sent,
+     *                                      or the user has already signed out
      */
 
-    @RequestMapping(method = RequestMethod.GET, path = "/question/all", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String authorization)
+    @RequestMapping(method = RequestMethod.GET, path = "/question/all",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization")
+                                                                             final String authorization)
             throws AuthorizationFailedException {
 
         List<QuestionEntity> questionEntities = questionService.getAllQuestions(authorization);
@@ -101,8 +108,10 @@ public class QuestionController {
     @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionEditResponse> editQuestion(@PathVariable("questionId") final String questionId,
-                                                             @RequestHeader("authorization") final String authorization,
+    public ResponseEntity<QuestionEditResponse> editQuestion(@PathVariable("questionId")
+                                                                 final String questionId,
+                                                             @RequestHeader("authorization")
+                                                             final String authorization,
                                                              final QuestionRequest questionEditRequest)
             throws AuthorizationFailedException, InvalidQuestionException {
 
@@ -118,5 +127,32 @@ public class QuestionController {
         return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
     }
 
+    /**
+     * This endpoint is used to delete a question that has been posted by a user. Only the owner
+     * or admin of the question can delete the question.
+     *
+     * @param questionId    - id of the question to be edited.
+     * @param authorization - access token to authenticate user
+     * @return - Id and status of the question deleted
+     * @throws AuthorizationFailedException -   if incorrect/ invalid authorization Token is sent,
+     *                                      or the user has already signed out, or The user is not the owner of the question
+     * @throws InvalidQuestionException     - if the question id does not exist in the database
+     */
+    @RequestMapping(method = RequestMethod.DELETE, path = "/question/delete/{questionId}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@PathVariable(value = "questionId")
+                                                                     final String questionId,
+                                                                 @RequestHeader("authorization")
+                                                                 final String authorization)
+            throws AuthorizationFailedException, InvalidQuestionException {
+        QuestionEntity deletedQuestion = questionService.deleteQuestion(questionId, authorization);
+        QuestionDeleteResponse questionDeleteResponse = new QuestionDeleteResponse()
+                .id(deletedQuestion.getUuid())
+                .status("QUESTION DELETED");
+        return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse, HttpStatus.OK);
+    }
 
 }
+
+
+

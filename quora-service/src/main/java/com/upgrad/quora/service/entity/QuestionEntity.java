@@ -43,6 +43,7 @@ public class QuestionEntity {
     @NotNull
     private ZonedDateTime date;
 
+
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     @NotNull
