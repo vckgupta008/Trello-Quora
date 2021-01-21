@@ -36,6 +36,7 @@ public class AnswerDao {
 
     /**
      * Retrieves  the answer present in the Database question table using uuid and return it
+     *
      * @param answerUuid - AnswerEntity object to be fetched using answerUuid
      * @return answer retrived using uuid present in the answer table
      */
@@ -46,6 +47,15 @@ public class AnswerDao {
         } catch (NoResultException nre) {
             return null;
         }
+    }
+
+    /**
+     * Remove  the answer present in the Database question table using uuid
+     *
+     * @param answerEntity - AnswerEntity object to be removed from database
+     */
+    public void deleteAnswer(final AnswerEntity answerEntity) {
+        entityManager.remove(answerEntity);
     }
 
 }
