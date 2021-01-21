@@ -40,6 +40,7 @@ public class QuestionDao {
 
     /**
      * Retrieves  the questions present in the Database question table using uuid and return it
+     *
      * @param questionUuid - QuestionEntity object to be fetched using questionUuid
      * @return question retrived using uuid present in the question table
      */
@@ -50,5 +51,17 @@ public class QuestionDao {
         } catch (NoResultException nre) {
             return null;
         }
+
     }
+
+    /**
+     * This method to update existing Question in database
+     *
+     * @param editedQuestionEntity - Edited QuestionEntity Object
+     * @return - QuestionEntity Object
+     */
+    public QuestionEntity editQuestionContent(final QuestionEntity editedQuestionEntity) {
+        return entityManager.merge(editedQuestionEntity);
+    }
+
 }
