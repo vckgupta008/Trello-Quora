@@ -6,7 +6,6 @@ import com.upgrad.quora.service.business.QuestionService;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
-import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,6 +29,7 @@ public class QuestionController {
      * and the incoming request is of 'POST' type
      * Persist QuestionRequest in the database
      *
+     * @param authorization   - String represents authorization token
      * @param questionRequest - QuestionRequest object to be persisted in the database
      * @return - ResponseEntity (QuestionResponse along with HTTP status code)
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization Token is sent,
@@ -71,8 +71,7 @@ public class QuestionController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/question/all",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization")
-                                                                             final String authorization)
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException {
 
         List<QuestionEntity> questionEntities = questionService.getAllQuestions(authorization);
@@ -108,10 +107,8 @@ public class QuestionController {
     @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionEditResponse> editQuestion(@PathVariable("questionId")
-                                                                 final String questionId,
-                                                             @RequestHeader("authorization")
-                                                             final String authorization,
+    public ResponseEntity<QuestionEditResponse> editQuestion(@PathVariable("questionId") final String questionId,
+                                                             @RequestHeader("authorization") final String authorization,
                                                              final QuestionRequest questionEditRequest)
             throws AuthorizationFailedException, InvalidQuestionException {
 
@@ -140,19 +137,15 @@ public class QuestionController {
      */
     @RequestMapping(method = RequestMethod.DELETE, path = "/question/delete/{questionId}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@PathVariable(value = "questionId")
-                                                                     final String questionId,
-                                                                 @RequestHeader("authorization")
-                                                                 final String authorization)
+    public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@PathVariable(value = "questionId") final String questionId,
+                                                                 @RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException, InvalidQuestionException {
-        QuestionEntity deletedQuestion = questionService.deleteQuestion(questionId, authorization);
+         questionService.deleteQuestion(questionId, authorization);
         QuestionDeleteResponse questionDeleteResponse = new QuestionDeleteResponse()
-                .id(deletedQuestion.getUuid())
+                .id(questionId)
                 .status("QUESTION DELETED");
         return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse, HttpStatus.OK);
     }
-
 }
-
 
 

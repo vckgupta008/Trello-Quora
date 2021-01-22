@@ -71,9 +71,7 @@ public class QuestionDao {
      * @return - Deleted QuestionEntity Object
      */
 
-    public QuestionEntity deleteQuestion(QuestionEntity questionEntity) {
+    public void deleteQuestion(QuestionEntity questionEntity) {
         entityManager.remove(questionEntity);
-        return questionEntity;
     }
-
 }

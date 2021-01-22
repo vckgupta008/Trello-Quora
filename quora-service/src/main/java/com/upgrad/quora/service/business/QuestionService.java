@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -81,7 +80,7 @@ public class QuestionService {
      * @return - QuestionEntity object
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization Token is sent,
      *                                      or the user has already signed out, or The user is not the owner of the question
-     * @throws InvalidQuestionException     - if the question
+     * @throws InvalidQuestionException     - if the question uuid does not exist in the database
      */
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -113,16 +112,17 @@ public class QuestionService {
     }
 
     /**
+     * Method to delete question from the database based on the question uuid
+     *
      * @param questUuid - String represents question uuid
      * @param token     - String Represents token of user for valid authentication
-     * @return - QuestionEntity
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization Token is sent,
      *                                      or the user has already signed out, or The user is not the owner of the question or
      * @throws InvalidQuestionException     - if the question id does not exist in the database
      */
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public QuestionEntity deleteQuestion(final String questUuid, final String token)
+    public void deleteQuestion(final String questUuid, final String token)
             throws AuthorizationFailedException, InvalidQuestionException {
 
         UserAuthEntity userAuthEntity = userDao.getUserAuth(token);
@@ -144,10 +144,7 @@ public class QuestionService {
             throw new AuthorizationFailedException("ATHR-003", "Only the question owner or admin can delete the question");
         }
 
-        return questionDao.deleteQuestion(questionEntity);
-
+        questionDao.deleteQuestion(questionEntity);
     }
-
-
 }
 
