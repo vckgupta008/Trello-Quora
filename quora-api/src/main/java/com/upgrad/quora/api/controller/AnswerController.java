@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -34,7 +36,8 @@ public class AnswerController {
      * @param questionUuid  - String represents question uuid
      * @return - ResponseEntity (AnswerResponse along with HTTP status code)
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization code is sent
-     * @throws InvalidQuestionException     - if incorrect/ invalid question code is sent
+     *                                      or user has not signed in or already signed out
+     * @throws InvalidQuestionException     - if incorrect/ invalid question uuid is sent
      */
 
     @RequestMapping(method = RequestMethod.POST, path = "/question/{questionId}/answer/create",
@@ -65,6 +68,7 @@ public class AnswerController {
      * @param authorization     - String represents authorization token
      * @return - ResponseEntity (AnswerEditResponse along with HTTP status code)
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization code is sent
+     *                                      or user has not signed in or already signed out
      * @throws AnswerNotFoundException      - if incorrect/ invalid answer uuid is sent
      */
 
@@ -94,6 +98,7 @@ public class AnswerController {
      * @param authorization - String represents authorization token
      * @return - ResponseEntity (AnswerDeleteResponse along with HTTP status code)
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization code is sent
+     *                                      or user has not signed in or already signed out
      * @throws AnswerNotFoundException      - if incorrect/ invalid answer uuid is sent
      */
 
@@ -103,12 +108,43 @@ public class AnswerController {
             @PathVariable("answerId") final String answerId,
             @RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException, AnswerNotFoundException {
-        System.out.println("checking in controller before service call");
         AnswerEntity deletedAnswerEntity = answerService.deleteAnswer(authorization, answerId);
-        System.out.println("checking in controller after service call");
         AnswerDeleteResponse answerDeleteResponse = new AnswerDeleteResponse().id(deletedAnswerEntity.getUuid())
                 .status("ANSWER DELETED");
         return new ResponseEntity<AnswerDeleteResponse>(answerDeleteResponse, HttpStatus.OK);
+    }
+
+    /**
+     * RestController method called when the request pattern is of type '/answer/all/{questionId}'
+     * and the incoming request is of 'GET' type
+     * Get answer details of question uuid
+     *
+     * @param questionId    - String represents question uuid
+     * @param authorization - String represents authorization token
+     * @return - ResponseEntity (AnswerDetailsResponse along with HTTP status code)
+     * @throws AuthorizationFailedException - if incorrect/ invalid authorization code is sent
+     * @throws InvalidQuestionException     - if incorrect/ invalid question uuid is sent
+     */
+
+    @RequestMapping(method = RequestMethod.GET, path = "/answer/all/{questionId}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<AnswerDetailsResponse>> getAllAnswersToQuestion(
+            @PathVariable("questionId") final String questionId,
+            @RequestHeader("authorization") final String authorization)
+            throws AuthorizationFailedException, InvalidQuestionException {
+
+        List<AnswerEntity> allAnswers = answerService.getAllAnswersToQuestion(authorization, questionId);
+        List<AnswerDetailsResponse> answerDetailsResponseList = new LinkedList<>();
+
+        for (AnswerEntity answerEntity : allAnswers) {
+            AnswerDetailsResponse answerDetailsResponse = new AnswerDetailsResponse()
+                    .id(answerEntity.getUuid()).answerContent(answerEntity.getAns()).
+                            questionContent(answerEntity.getQuestion().getContent());
+            answerDetailsResponseList.add(answerDetailsResponse);
+        }
+
+        return new ResponseEntity<List<AnswerDetailsResponse>>(answerDetailsResponseList, HttpStatus.OK);
+
     }
 
 }

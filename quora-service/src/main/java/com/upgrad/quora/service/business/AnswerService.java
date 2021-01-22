@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class AnswerService {
     @Autowired
@@ -128,7 +130,6 @@ public class AnswerService {
             throws AuthorizationFailedException, AnswerNotFoundException {
 
         UserAuthEntity userAuthEntity = userDao.getUserAuth(authorizationToken);
-        System.out.println("checking in service 1");
         // if UserAuthEntity object does not exist for the given authorization code, throw exception
         if (userAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
@@ -158,6 +159,45 @@ public class AnswerService {
         } else {
             throw new AuthorizationFailedException("ATHR-003", "Only the answer owner or admin can delete the answer");
         }
+
+    }
+
+    /**
+     * Method to fetch answer details of question uuid in the database through repository
+     *
+     * @param authorizationToken - String represents authorization token
+     * @param questionUuid       - String represents question uuid
+     * @return - List of AnswerEntity object
+     * @throws AuthorizationFailedException - if incorrect/ invalid authorization token is sent or
+     *                                     the user has not signed in or already logged out
+     * @throws InvalidQuestionException     - if incorrect/ invalid question uuid is sent
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<AnswerEntity> getAllAnswersToQuestion(final String authorizationToken, final String questionUuid)
+            throws AuthorizationFailedException, InvalidQuestionException {
+
+        UserAuthEntity userAuthEntity = userDao.getUserAuth(authorizationToken);
+        // if UserAuthEntity object does not exist for the given authorization code, throw exception
+        if (userAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+
+        // if the user has already logged out, throw exception
+        if (userAuthEntity.getLogoutAt() != null) {
+            throw new AuthorizationFailedException
+                    ("ATHR-002", "User is signed out.Sign in first to get the answers");
+        }
+
+        QuestionEntity questionEntity = questionDao.getQuestionByUuid(questionUuid);
+
+        //if the question object does not exist, throw exception
+        if (questionEntity == null) {
+            throw new InvalidQuestionException("QUES-001",
+                    "The question with entered uuid whose details are to be seen does not exist");
+        }
+
+        List<AnswerEntity> allAnswers = answerDao.getAllAnswersToQuestion(questionEntity);
+        return allAnswers;
 
     }
 }

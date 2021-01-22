@@ -105,7 +105,7 @@ public class QuestionService {
             throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
         }
 
-        if (!currentQuestionEntity.getUser().getUuid().equals(userAuthEntity.getUser().getUuid())) {
+        if (currentQuestionEntity.getUser().getId()!=(userAuthEntity.getUser().getId())) {
             throw new AuthorizationFailedException("ATHR-003", "Only the question owner can edit the question");
         }
 
@@ -142,8 +142,8 @@ public class QuestionService {
             throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
         }
 
-        if (questionEntity.getUser().getId() == userAuthEntity.getUser().getId()
-                && !userAuthEntity.getUser().getRole().equals("admin")) {
+        if (questionEntity.getUser().getId() != userAuthEntity.getUser().getId()
+                || !userAuthEntity.getUser().getRole().equals("admin")) {
             throw new AuthorizationFailedException("ATHR-003", "Only the question owner or admin can delete the question");
         }
 
