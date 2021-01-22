@@ -74,4 +74,18 @@ public class QuestionDao {
     public void deleteQuestion(QuestionEntity questionEntity) {
         entityManager.remove(questionEntity);
     }
+
+    /**
+     * Method to retrieve all Questions based on given user uuid
+     *
+     * @param userUuid - String represents user uuid
+     * @return - List of QuestionEntity
+     */
+    public List<QuestionEntity> getAllQuestionsByUser(final String userUuid) {
+        final List<QuestionEntity> allQuestions = entityManager.createNamedQuery(
+                "getQuestionByUserUuid", QuestionEntity.class)
+                .setParameter("userUuid", userUuid).getResultList();
+        return allQuestions;
+    }
+
 }

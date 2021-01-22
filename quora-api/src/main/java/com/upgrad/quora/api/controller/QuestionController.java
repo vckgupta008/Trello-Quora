@@ -6,12 +6,14 @@ import com.upgrad.quora.service.business.QuestionService;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
+import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.time.ZonedDateTime;
@@ -140,12 +142,43 @@ public class QuestionController {
     public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@PathVariable(value = "questionId") final String questionId,
                                                                  @RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException, InvalidQuestionException {
-         questionService.deleteQuestion(questionId, authorization);
+        questionService.deleteQuestion(questionId, authorization);
         QuestionDeleteResponse questionDeleteResponse = new QuestionDeleteResponse()
                 .id(questionId)
                 .status("QUESTION DELETED");
         return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse, HttpStatus.OK);
     }
+
+    /**
+     * RestController method called when the request pattern is of type "question/all/{userId}"
+     * and the incoming request is of 'GET' type
+     * Retrieve all the questions for the given user
+     *
+     * @param accessToken - access token to authenticate user
+     * @param userId      - This represents userUuid
+     * @return - ResponseEntity(QuestionDetailsResponse, HttpStatus.OK)
+     * @throws AuthorizationFailedException - if incorrect/ invalid authorization Token is sent,
+     *                                      or the user has already signed out
+     * @throws UserNotFoundException        - if user does not exist for the given user uuid in the database
+     */
+    @RequestMapping(method = RequestMethod.GET, path = "question/all/{userId}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<QuestionDetailsResponse>> getQuestionsByUser(@RequestHeader("authorization") final String accessToken,
+                                                                            @PathVariable("userId") String userId)
+            throws AuthorizationFailedException, UserNotFoundException {
+        List<QuestionEntity> questions = questionService.getAllQuestionsByUser(userId, accessToken);
+        List<QuestionDetailsResponse> questionDetailResponses = new ArrayList<>();
+        for (QuestionEntity questionEntity : questions) {
+
+            QuestionDetailsResponse questionDetailResponse = new QuestionDetailsResponse();
+            questionDetailResponse.setId(questionEntity.getUuid());
+            questionDetailResponse.setContent(questionEntity.getContent());
+            questionDetailResponses.add(questionDetailResponse);
+        }
+        return new ResponseEntity<List<QuestionDetailsResponse>>(
+                questionDetailResponses, HttpStatus.OK);
+    }
+
 }
 
 
