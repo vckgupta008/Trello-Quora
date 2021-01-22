@@ -20,7 +20,7 @@ public class QuestionDao {
      * Method to persist QuestionEntity object in the database
      *
      * @param questionEntity - QuestionEntity object to be persisted
-     * @return - QuestionEntity object
+     * @return - persisted QuestionEntity object
      */
     public QuestionEntity createQuestion(final QuestionEntity questionEntity) {
         entityManager.persist(questionEntity);
@@ -40,8 +40,9 @@ public class QuestionDao {
 
     /**
      * Retrieves  the questions present in the Database question table using uuid and return it
+     *
      * @param questionUuid - QuestionEntity object to be fetched using questionUuid
-     * @return question retrived using uuid present in the question table
+     * @return question retrieve using uuid present in the question table
      */
     public QuestionEntity getQuestionByUuid(final String questionUuid) {
         try {
@@ -50,5 +51,27 @@ public class QuestionDao {
         } catch (NoResultException nre) {
             return null;
         }
+
+    }
+
+    /**
+     * This method to update existing Question in database
+     *
+     * @param editedQuestionEntity - Edited QuestionEntity Object
+     * @return - updated QuestionEntity Object
+     */
+    public QuestionEntity editQuestionContent(final QuestionEntity editedQuestionEntity) {
+        return entityManager.merge(editedQuestionEntity);
+    }
+
+    /**
+     * This method to Delete existing Question in database
+     *
+     * @param questionEntity - Delete QuestionEntity Object
+     * @return - Deleted QuestionEntity Object
+     */
+
+    public void deleteQuestion(QuestionEntity questionEntity) {
+        entityManager.remove(questionEntity);
     }
 }
