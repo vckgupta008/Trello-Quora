@@ -35,9 +35,9 @@ public class UserController {
      * and the incoming request is of 'POST' type
      * Persists UserEntity details in the database
      *
-     * @param signupUserRequest             - signup user details
-     * @return                              - ResponseEntity (SignupUserResponse along with HTTP status code)
-     * @throws SignUpRestrictedException    - if the username/ user details with the emailid already exists in the database
+     * @param signupUserRequest - signup user details
+     * @return - ResponseEntity (SignupUserResponse along with HTTP status code)
+     * @throws SignUpRestrictedException - if the username/ user details with the emailid already exists in the database
      */
     @RequestMapping(method = RequestMethod.POST, path = "/user/signup",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -60,7 +60,8 @@ public class UserController {
 
         final UserEntity createdUserEntity = userBusinessService.signup(userEntity);
 
-        SignupUserResponse userResponse = new SignupUserResponse().id(createdUserEntity.getUuid())
+        SignupUserResponse userResponse = new SignupUserResponse()
+                .id(createdUserEntity.getUuid())
                 .status("USER SUCCESSFULLY REGISTERED");
 
         return new ResponseEntity<SignupUserResponse>(userResponse, HttpStatus.CREATED);
@@ -71,9 +72,9 @@ public class UserController {
      * and the incoming request is of 'POST' type
      * Login user if valid credentials are provided and generates JWT auth token
      *
-     * @param authorization                     - String representing the username and password of the user
-     * @return                                  - ResponseEntity (SigninResponse along with HTTP status code)
-     * @throws AuthenticationFailedException    - if the username/ password provided is incorrect
+     * @param authorization - String representing the username and password of the user
+     * @return - ResponseEntity (SigninResponse along with HTTP status code)
+     * @throws AuthenticationFailedException - if the username/ password provided is incorrect
      */
     @RequestMapping(method = RequestMethod.POST, path = "/user/signin", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SigninResponse> signin(@RequestHeader("authorization") final String authorization)
@@ -86,10 +87,11 @@ public class UserController {
         UserAuthEntity userAuth = userBusinessService.signInUser(decodedArray[0], decodedArray[1]);
         UserEntity user = userAuth.getUser();
 
-        SigninResponse signinResponse = new SigninResponse().id(user.getUuid())
+        SigninResponse signinResponse = new SigninResponse()
+                .id(user.getUuid())
                 .message("SIGNED IN SUCCESSFULLY");
         HttpHeaders headers = new HttpHeaders();
-        headers.add("access-token", userAuth.getAccessToken());
+        headers.add("access_token", userAuth.getAccessToken());
 
         return new ResponseEntity<SigninResponse>(signinResponse, headers, HttpStatus.OK);
     }
@@ -99,9 +101,9 @@ public class UserController {
      * and the incoming request is of 'POST' type
      * Sign out user if valid authorization token is provided
      *
-     * @param authorization                 - String represents authorization token
-     * @return                              - ResponseEntity (SignoutResponse along with HTTP status code)
-     * @throws SignOutRestrictedException   - if valid authorization token is not provided
+     * @param authorization - String represents authorization token
+     * @return - ResponseEntity (SignoutResponse along with HTTP status code)
+     * @throws SignOutRestrictedException - if valid authorization token is not provided
      */
     @RequestMapping(method = RequestMethod.POST, path = "/user/signout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignoutResponse> signout(@RequestHeader("authorization") final String authorization)
@@ -110,7 +112,8 @@ public class UserController {
         UserAuthEntity userAuth = userBusinessService.signOutUser(authorization);
         UserEntity user = userAuth.getUser();
 
-        SignoutResponse signoutResponse = new SignoutResponse().id(user.getUuid())
+        SignoutResponse signoutResponse = new SignoutResponse()
+                .id(user.getUuid())
                 .message("SIGNED OUT SUCCESSFULLY");
 
         return new ResponseEntity<SignoutResponse>(signoutResponse, HttpStatus.OK);
