@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
+
 @Service
 public class AdminService {
 
@@ -34,7 +36,8 @@ public class AdminService {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         }
         // if the user has already logged out, throw exception
-        if (userAuthEntity.getLogoutAt() != null) {
+        if (userAuthEntity.getLogoutAt() != null
+                || userAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-002", "User is signed out");
         }
         // if the user not admin, then he is not allowed to delete user

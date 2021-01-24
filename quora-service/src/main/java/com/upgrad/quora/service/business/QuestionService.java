@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -43,7 +44,8 @@ public class QuestionService {
         }
 
         // if the user has already logged out, throw exception
-        if (userAuthEntity.getLogoutAt() != null) {
+        if (userAuthEntity.getLogoutAt() != null
+                || userAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to post a question");
         }
 
@@ -67,7 +69,8 @@ public class QuestionService {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         }
         //Checking if user is logged out.
-        if (userAuthEntity.getLogoutAt() != null) {
+        if (userAuthEntity.getLogoutAt() != null
+                || userAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get all questions");
         }
 
@@ -96,9 +99,9 @@ public class QuestionService {
         if (userAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         }
-        if (userAuthEntity.getLogoutAt() != null) {
-            throw new AuthorizationFailedException("ATHR-002",
-                    "User is signed out.Sign in first to edit the question");
+        if (userAuthEntity.getLogoutAt() != null
+                || userAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to edit the question");
         }
         QuestionEntity currentQuestionEntity = questionDao.getQuestionByUuid(editQuestionEntity.getUuid());
 
@@ -134,7 +137,8 @@ public class QuestionService {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         }
 
-        if (userAuthEntity.getLogoutAt() != null) {
+        if (userAuthEntity.getLogoutAt() != null
+                || userAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to delete a question");
         }
 
@@ -170,7 +174,8 @@ public class QuestionService {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         }
 
-        if (userAuth.getLogoutAt() != null) {
+        if (userAuth.getLogoutAt() != null
+                || userAuth.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get all questions posted by a specific user");
         }
 

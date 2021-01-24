@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -56,7 +57,8 @@ public class AnswerService {
         }
 
         // if the user has already logged out, throw exception
-        if (userAuthEntity.getLogoutAt() != null) {
+        if (userAuthEntity.getLogoutAt() != null
+                || userAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to post an answer");
         }
 
@@ -89,7 +91,8 @@ public class AnswerService {
         }
 
         // if the user has already logged out, throw exception
-        if (userAuthEntity.getLogoutAt() != null) {
+        if (userAuthEntity.getLogoutAt() != null
+                || userAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to edit an answer");
         }
 
@@ -134,7 +137,8 @@ public class AnswerService {
         }
 
         // if the user has already logged out, throw exception
-        if (userAuthEntity.getLogoutAt() != null) {
+        if (userAuthEntity.getLogoutAt() != null
+                || userAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to delete an answer");
         }
 
@@ -177,9 +181,9 @@ public class AnswerService {
         }
 
         // if the user has already logged out, throw exception
-        if (userAuthEntity.getLogoutAt() != null) {
-            throw new AuthorizationFailedException
-                    ("ATHR-002", "User is signed out.Sign in first to get the answers");
+        if (userAuthEntity.getLogoutAt() != null
+                || userAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get the answers");
         }
 
         QuestionEntity questionEntity = questionDao.getQuestionByUuid(questionUuid);
