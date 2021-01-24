@@ -1,7 +1,6 @@
 package com.upgrad.quora.service.dao;
 
 import com.upgrad.quora.service.entity.AnswerEntity;
-import com.upgrad.quora.service.entity.QuestionEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -32,7 +31,7 @@ public class AnswerDao {
      * @param answerEntity - AnswerEntity object to be merged
      * @return - updated AnswerEntity object
      */
-    public AnswerEntity editAnswerContent(final AnswerEntity answerEntity) {
+    public AnswerEntity updateAnswerContent(final AnswerEntity answerEntity) {
         return entityManager.merge(answerEntity);
     }
 
@@ -45,7 +44,8 @@ public class AnswerDao {
     public AnswerEntity getAnswerByUuid(final String answerUuid) {
         try {
             return entityManager.createNamedQuery("getAnswerByUuid", AnswerEntity.class)
-                    .setParameter("uuid", answerUuid).getSingleResult();
+                    .setParameter("uuid", answerUuid)
+                    .getSingleResult();
         } catch (NoResultException nre) {
             return null;
         }
@@ -65,10 +65,11 @@ public class AnswerDao {
      *
      * @return The list of AnswerEntity  present for question uuid
      */
-    public List<AnswerEntity> getAllAnswersToQuestion(QuestionEntity questionEntity) {
+    public List<AnswerEntity> getAllAnswersToQuestion(final String questionUuid) {
         final List<AnswerEntity> allAnswers = entityManager
                 .createNamedQuery("getAllAnswersOfQuestion", AnswerEntity.class)
-                .setParameter("question", questionEntity).getResultList();
+                .setParameter("questionUuid", questionUuid)
+                .getResultList();
         return allAnswers;
     }
 

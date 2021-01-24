@@ -33,7 +33,7 @@ public class AnswerService {
      * @param answerEntity       - AnswerEntity object to be persisted in the database
      * @param authorizationToken - String represents authorization token
      * @param questionUuid       - String represents question uuid
-     * @return - AnswerEntity object
+     * @return - persisted AnswerEntity object
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization token is sent or
      *                                      user has not signed in or already signed out
      * @throws InvalidQuestionException     - if incorrect/ invalid question uuid is sent
@@ -57,7 +57,7 @@ public class AnswerService {
 
         // if the user has already logged out, throw exception
         if (userAuthEntity.getLogoutAt() != null) {
-            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to post a question");
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to post an answer");
         }
 
         answerEntity.setQuestion(questionEntity);
@@ -70,16 +70,15 @@ public class AnswerService {
     /**
      * Method to persist AnswerEntity object in the database through repository
      *
-     * @param answerEntity       - AnswerEntity object to be persisted in the database
+     * @param answerEntity       - AnswerEntity object to be updated in the database
      * @param authorizationToken - String represents authorization token
-     * @param answerUuid         - String represents answer uuid
-     * @return - AnswerEntity object
+     * @return - Updated AnswerEntity object
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization token is sent or
      *                                      Owner does not edit answer or the user has already logged out
      * @throws AnswerNotFoundException      - if incorrect/ invalid answer uuid is sent
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public AnswerEntity editAnswerContent(final AnswerEntity answerEntity, final String authorizationToken, final String answerUuid)
+    public AnswerEntity editAnswerContent(final AnswerEntity answerEntity, final String authorizationToken)
             throws AuthorizationFailedException, AnswerNotFoundException {
 
         UserAuthEntity userAuthEntity = userDao.getUserAuth(authorizationToken);
@@ -94,7 +93,7 @@ public class AnswerService {
             throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to edit an answer");
         }
 
-        AnswerEntity existingAnswerEntity = answerDao.getAnswerByUuid(answerUuid);
+        AnswerEntity existingAnswerEntity = answerDao.getAnswerByUuid(answerEntity.getUuid());
 
         //if answer does not exist
         if (existingAnswerEntity == null) {
@@ -108,10 +107,9 @@ public class AnswerService {
 
         answerEntity.setUser(existingAnswerEntity.getUser());
         answerEntity.setQuestion(existingAnswerEntity.getQuestion());
-        answerEntity.setDate(existingAnswerEntity.getDate());
         answerEntity.setId(existingAnswerEntity.getId());
 
-        AnswerEntity editedAnswerEntity = answerDao.editAnswerContent(answerEntity);
+        AnswerEntity editedAnswerEntity = answerDao.updateAnswerContent(answerEntity);
         return editedAnswerEntity;
     }
 
@@ -120,13 +118,13 @@ public class AnswerService {
      *
      * @param authorizationToken - String represents authorization token
      * @param answerUuid         - String represents answer uuid
-     * @return - AnswerEntity object
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization token is sent or
      *                                      Owner/Admin does not delete answer or the user has already logged out
      * @throws AnswerNotFoundException      - if incorrect/ invalid answer uuid is sent
      */
+
     @Transactional(propagation = Propagation.REQUIRED)
-    public AnswerEntity deleteAnswer(final String authorizationToken, final String answerUuid)
+    public void deleteAnswer(final String authorizationToken, final String answerUuid)
             throws AuthorizationFailedException, AnswerNotFoundException {
 
         UserAuthEntity userAuthEntity = userDao.getUserAuth(authorizationToken);
@@ -150,15 +148,12 @@ public class AnswerService {
         //if owner of the answer match with user or user is admin then delete the answer entity
         String role = userAuthEntity.getUser().getRole();
 
-        if (existingAnswerEntity.getUser().getId() == userAuthEntity.getUser().getId() ||
-                role.equals("admin")
-        ) {
-            System.out.println("checking in service 2");
-            answerDao.deleteAnswer(existingAnswerEntity);
-            return existingAnswerEntity;
-        } else {
+        if (existingAnswerEntity.getUser().getId() != userAuthEntity.getUser().getId()
+                && role.equals("nonadmin")) {
             throw new AuthorizationFailedException("ATHR-003", "Only the answer owner or admin can delete the answer");
         }
+
+        answerDao.deleteAnswer(existingAnswerEntity);
 
     }
 
@@ -169,10 +164,9 @@ public class AnswerService {
      * @param questionUuid       - String represents question uuid
      * @return - List of AnswerEntity object
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization token is sent or
-     *                                     the user has not signed in or already logged out
+     *                                      the user has not signed in or already logged out
      * @throws InvalidQuestionException     - if incorrect/ invalid question uuid is sent
      */
-    @Transactional(propagation = Propagation.REQUIRED)
     public List<AnswerEntity> getAllAnswersToQuestion(final String authorizationToken, final String questionUuid)
             throws AuthorizationFailedException, InvalidQuestionException {
 
@@ -196,7 +190,7 @@ public class AnswerService {
                     "The question with entered uuid whose details are to be seen does not exist");
         }
 
-        List<AnswerEntity> allAnswers = answerDao.getAllAnswersToQuestion(questionEntity);
+        List<AnswerEntity> allAnswers = answerDao.getAllAnswersToQuestion(questionUuid);
         return allAnswers;
 
     }
