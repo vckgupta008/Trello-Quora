@@ -34,7 +34,8 @@ public class QuestionDao {
      */
     public List<QuestionEntity> getAllQuestions() {
         final List<QuestionEntity> allQuestions = entityManager
-                .createNamedQuery("getAllQuestions", QuestionEntity.class).getResultList();
+                .createNamedQuery("getAllQuestions", QuestionEntity.class)
+                .getResultList();
         return allQuestions;
     }
 
@@ -47,7 +48,8 @@ public class QuestionDao {
     public QuestionEntity getQuestionByUuid(final String questionUuid) {
         try {
             return entityManager.createNamedQuery("getQuestionByUuid", QuestionEntity.class)
-                    .setParameter("uuid", questionUuid).getSingleResult();
+                    .setParameter("uuid", questionUuid)
+                    .getSingleResult();
         } catch (NoResultException nre) {
             return null;
         }
@@ -60,7 +62,7 @@ public class QuestionDao {
      * @param editedQuestionEntity - Edited QuestionEntity Object
      * @return - updated QuestionEntity Object
      */
-    public QuestionEntity editQuestionContent(final QuestionEntity editedQuestionEntity) {
+    public QuestionEntity updateQuestionContent(final QuestionEntity editedQuestionEntity) {
         return entityManager.merge(editedQuestionEntity);
     }
 
@@ -68,10 +70,8 @@ public class QuestionDao {
      * This method to Delete existing Question in database
      *
      * @param questionEntity - Delete QuestionEntity Object
-     * @return - Deleted QuestionEntity Object
      */
-
-    public void deleteQuestion(QuestionEntity questionEntity) {
+    public void deleteQuestion(final QuestionEntity questionEntity) {
         entityManager.remove(questionEntity);
     }
 
@@ -84,7 +84,8 @@ public class QuestionDao {
     public List<QuestionEntity> getAllQuestionsByUser(final String userUuid) {
         final List<QuestionEntity> allQuestions = entityManager.createNamedQuery(
                 "getQuestionByUserUuid", QuestionEntity.class)
-                .setParameter("userUuid", userUuid).getResultList();
+                .setParameter("userUuid", userUuid)
+                .getResultList();
         return allQuestions;
     }
 
