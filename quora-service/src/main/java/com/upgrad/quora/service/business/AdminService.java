@@ -19,8 +19,8 @@ public class AdminService {
     /**
      * Method to delete user profile from database for the given user
      *
-     * @param uuid                          - String representing user uuid that needs to be deleted from the database
-     * @param authorizationToken            - String represents authorization token
+     * @param uuid               - String representing user uuid that needs to be deleted from the database
+     * @param authorizationToken - String represents authorization token
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization code is sent, or if the user is not 'admin'
      * @throws UserNotFoundException        - if user to be deleted does not exist in the database
      */

@@ -20,11 +20,11 @@ public class AdminController {
     /**
      * RestController method called when the request pattern is of type '/admin/user/{userId}'
      * and the incoming request is of 'DELETE' type
-     * Delete user from the database
+     * Delete user from the database if the logged in user is an admin
      *
-     * @param uuid                          - String representing user uuid that needs to be deleted from the database
-     * @param authorization                 - String represents authorization token
-     * @return                              - ResponseEntity (UserDeleteResponse along with HTTP status code)
+     * @param uuid          - String representing user uuid that needs to be deleted from the database
+     * @param authorization - String represents authorization token
+     * @return - ResponseEntity (UserDeleteResponse along with HTTP status code)
      * @throws AuthorizationFailedException - if incorrect/ invalid authorization code is sent, or if the user is not 'admin'
      * @throws UserNotFoundException        - if user to be deleted does not exist in the database
      */
@@ -36,7 +36,8 @@ public class AdminController {
 
         adminService.deleteUser(uuid, authorization);
 
-        UserDeleteResponse userDeleteResponse = new UserDeleteResponse().id(uuid)
+        UserDeleteResponse userDeleteResponse = new UserDeleteResponse()
+                .id(uuid)
                 .status("USER SUCCESSFULLY DELETED");
 
         return new ResponseEntity<UserDeleteResponse>(userDeleteResponse, HttpStatus.OK);
