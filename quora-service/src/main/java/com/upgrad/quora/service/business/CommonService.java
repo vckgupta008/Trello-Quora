@@ -17,13 +17,15 @@ public class CommonService {
     /**
      * Method to retrieve user details based on the provided uuid
      *
-     * @param userUuid                       - String representing user uuid
-     * @param authorizationToken             - String represents authorization token
-     * @return                               - UserEntity object
-     * @throws AuthorizationFailedException  - if user has not signed in or already signed out
-     * @throws UserNotFoundException         - if user profile does not exist in the database
+     * @param userUuid           - String representing user uuid
+     * @param authorizationToken - String represents authorization token
+     * @return - UserEntity object
+     * @throws AuthorizationFailedException - if user has not signed in or already signed out
+     * @throws UserNotFoundException        - if user profile does not exist in the database
      */
-    public UserEntity getUserByUuid(final String userUuid, final String authorizationToken) throws AuthorizationFailedException, UserNotFoundException {
+    public UserEntity getUserByUuid(final String userUuid, final String authorizationToken)
+            throws AuthorizationFailedException, UserNotFoundException {
+
         UserAuthEntity userAuthEntity = userDao.getUserAuth(authorizationToken);
         // if UserAuthEntity object does not exist for the given authorization code, throw exception
         if (userAuthEntity == null) {
