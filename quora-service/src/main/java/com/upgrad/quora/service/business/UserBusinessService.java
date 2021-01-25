@@ -26,11 +26,12 @@ public class UserBusinessService {
     /**
      * Method to persist user details in the database through repository
      *
-     * @param userEntity    - UserEntity object containing all details the user to be persisted
-     * @return              - UserEntity object
+     * @param userEntity - UserEntity object containing all details the user to be persisted
+     * @return - UserEntity object
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public UserEntity signup(final UserEntity userEntity) throws SignUpRestrictedException {
+    public UserEntity signup(final UserEntity userEntity)
+            throws SignUpRestrictedException {
         // Throw exception if user profile already exists for the given username
         UserEntity existingUserByUsername = userDao.getUserByUsername(userEntity.getUserName());
         if (existingUserByUsername != null) {
@@ -53,13 +54,14 @@ public class UserBusinessService {
      * Method to generate JWT auth token if the credentials entered are correct
      * and persist the user auth details in the database through repository
      *
-     * @param username                          - String representing username
-     * @param password                          - String representing password
-     * @return                                  - UserAuthEntity object
-     * @throws AuthenticationFailedException    - if incorrect credentials are provided during signin
+     * @param username - String representing username
+     * @param password - String representing password
+     * @return - UserAuthEntity object
+     * @throws AuthenticationFailedException - if incorrect credentials are provided during signin
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public UserAuthEntity signInUser(final String username, final String password) throws AuthenticationFailedException {
+    public UserAuthEntity signInUser(final String username, final String password)
+            throws AuthenticationFailedException {
 
         // If user does not exists with the provided username, throw exception
         UserEntity userEntity = userDao.getUserByUsername(username);
@@ -93,12 +95,13 @@ public class UserBusinessService {
     /**
      * Method to update UserAuthEntity logout time if valid authorization code is provided
      *
-     * @param authorizationToken            - String represents authorization token
-     * @return                              - UserAuthEntity object
-     * @throws SignOutRestrictedException   - if valid authorization token is not provided
+     * @param authorizationToken - String represents authorization token
+     * @return - UserAuthEntity object
+     * @throws SignOutRestrictedException - if valid authorization token is not provided
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public UserAuthEntity signOutUser(final String authorizationToken) throws SignOutRestrictedException {
+    public UserAuthEntity signOutUser(final String authorizationToken)
+            throws SignOutRestrictedException {
         UserAuthEntity userAuthEntity = userDao.getUserAuth(authorizationToken);
         if (userAuthEntity == null) {
             throw new SignOutRestrictedException("SGR-001", "User is not Signed in");

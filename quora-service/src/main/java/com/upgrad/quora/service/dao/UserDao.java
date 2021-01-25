@@ -17,8 +17,8 @@ public class UserDao {
     /**
      * Method to get user details for the given username from the database
      *
-     * @param username  - String that represents username
-     * @return          - UserEntity object if user exists, else return null
+     * @param username - String that represents username
+     * @return - UserEntity object if user exists, else return null
      */
     public UserEntity getUserByUsername(final String username) {
         try {
@@ -33,8 +33,8 @@ public class UserDao {
     /**
      * Method to get user details for the given email id from the database
      *
-     * @param email     - String that represents email id
-     * @return          - UserEntity object if user exists, else return null
+     * @param email - String that represents email id
+     * @return - UserEntity object if user exists, else return null
      */
     public UserEntity getUserByEmail(final String email) {
         try {
@@ -49,8 +49,8 @@ public class UserDao {
     /**
      * Metjod to persist user details in the database
      *
-     * @param userEntity    - UserEntity object to be persisted in the database
-     * @return              - UserEntity object
+     * @param userEntity - UserEntity object to be persisted in the database
+     * @return - Created UserEntity object
      */
     public UserEntity createUser(final UserEntity userEntity) {
         entityManager.persist(userEntity);
@@ -60,8 +60,8 @@ public class UserDao {
     /**
      * Method to persist user auth details in the database
      *
-     * @param userAuth  - UserAuthEntity object to be persisted in the database
-     * @return          - UserAuthEntity object
+     * @param userAuth - UserAuthEntity object to be persisted in the database
+     * @return - Created UserAuthEntity object
      */
     public UserAuthEntity createUserAuth(final UserAuthEntity userAuth) {
         entityManager.persist(userAuth);
@@ -70,8 +70,9 @@ public class UserDao {
 
     /**
      * Method to retrieve UserAuthEntity for the given access token
-     * @param accessToken   - String represents the access token
-     * @return              - UserAuthEntity object if present in the database, else return null
+     *
+     * @param accessToken - String represents the access token
+     * @return - UserAuthEntity object if present in the database, else return null
      */
     public UserAuthEntity getUserAuth(final String accessToken) {
         try {
@@ -85,17 +86,18 @@ public class UserDao {
 
     /**
      * Method to update UserAuthEntity object in the database
-     * @param userAuthEntity    - UserAuthEntity object containing updated values
+     *
+     * @param userAuthEntity - UserAuthEntity object containing updated values
      */
-    public void updateUserAuth(UserAuthEntity userAuthEntity) {
+    public void updateUserAuth(final UserAuthEntity userAuthEntity) {
         entityManager.merge(userAuthEntity);
     }
 
     /**
      * Method to get user details for the given user uuid from the database
      *
-     * @param uuid      - String that represents user uuid
-     * @return          - UserEntity object if user exists, else return null
+     * @param uuid - String that represents user uuid
+     * @return - UserEntity object if user exists, else return null
      */
     public UserEntity getUserByUuid(final String uuid) {
         try {
@@ -110,9 +112,9 @@ public class UserDao {
     /**
      * Method to delete user profile from database
      *
-     * @param user  - UserEntity object to be deleted
+     * @param user - UserEntity object to be deleted
      */
-    public void deleteUser(UserEntity user) {
+    public void deleteUser(final UserEntity user) {
         entityManager.remove(user);
     }
 }

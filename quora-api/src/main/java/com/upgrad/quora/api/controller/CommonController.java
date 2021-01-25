@@ -15,25 +15,23 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/")
 public class CommonController {
 
-    @Autowired private CommonService commonService;
+    @Autowired
+    private CommonService commonService;
 
     /**
      * RestController method called when the request pattern is of type '/userprofile/{userId}'
      * and the incoming request is of 'GET' type
      * Retrieve user details based on the uuid provided
      *
-     * @param userUuid                          - String representing user uuid
-     * @param authorization                     - String represents authorization token
-     * @return                                  - ResponseEntity (UserDetailsResponse along with HTTP status code)
-     * @throws AuthorizationFailedException     - if user has not signed in or already signed out
-     * @throws UserNotFoundException            - if user profile does not exist in the database
+     * @param userUuid      - String representing user uuid
+     * @param authorization - String represents authorization token
+     * @return - ResponseEntity (UserDetailsResponse along with HTTP status code)
+     * @throws AuthorizationFailedException - if user has not signed in or already signed out
+     * @throws UserNotFoundException        - if user profile does not exist in the database
      */
-    @GetMapping(
-            path = "/userprofile/{userId}",
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<UserDetailsResponse> userProfile(
-            @PathVariable("userId") final String userUuid,
-            @RequestHeader("authorization") final String authorization)
+    @GetMapping(path = "/userprofile/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<UserDetailsResponse> userProfile(@PathVariable("userId") final String userUuid,
+                                                           @RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException, UserNotFoundException {
 
         UserEntity existingUser = commonService.getUserByUuid(userUuid, authorization);

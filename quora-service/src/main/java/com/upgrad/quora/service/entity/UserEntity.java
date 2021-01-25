@@ -20,7 +20,7 @@ import java.io.Serializable;
                 @NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid =:uuid")
         }
 )
-public class UserEntity implements Serializable{
+public class UserEntity implements Serializable {
 
     @Id
     @Column(name = "ID")
@@ -57,16 +57,16 @@ public class UserEntity implements Serializable{
     @ToStringExclude
     private String salt;
 
-    @Column(name="COUNTRY")
+    @Column(name = "COUNTRY")
     private String country;
 
-    @Column(name="ABOUTME")
+    @Column(name = "ABOUTME")
     private String aboutMe;
 
-    @Column(name="DOB")
+    @Column(name = "DOB")
     private String dob;
 
-    @Column(name="ROLE")
+    @Column(name = "ROLE")
     private String role;
 
     @Column(name = "CONTACTNUMBER")

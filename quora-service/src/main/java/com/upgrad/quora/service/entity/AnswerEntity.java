@@ -9,6 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 /**
@@ -20,11 +21,11 @@ import java.time.ZonedDateTime;
 @Table(name = "answer")
 @NamedQueries(
         {
-
-                @NamedQuery(name = "getAnswerByUuid", query = "select a from AnswerEntity a where a.uuid = :uuid")
+                @NamedQuery(name = "getAnswerByUuid", query = "select a from AnswerEntity a where a.uuid = :uuid"),
+                @NamedQuery(name = "getAllAnswersOfQuestion", query = "select a from AnswerEntity a where a.question.uuid = :questionUuid"),
         }
 )
-public class AnswerEntity {
+public class AnswerEntity implements Serializable {
 
     @Id
     @Column(name = "ID")
